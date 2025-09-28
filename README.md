@@ -23,4 +23,7 @@ git clone https://github.com/ekkor13/dos_tool/
 cd dos_tool
 make
 make install
+
+###Launch
+```bash
 dos_tool --help
