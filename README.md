@@ -1,6 +1,6 @@
 # dos_tool 
 
-console-based utility designed to test network resilience against DoS attacks by generating controlled traffic.
+console-based utility to test nDoS attacks by generating controlled traffic.
 
 ---
 
