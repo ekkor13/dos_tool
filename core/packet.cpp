@@ -1,6 +1,6 @@
 #include "packet.hpp"
-#include "../utils/checksum.hpp" // Наш модуль!
-#include <cstring>           // Для memset
+#include "../utils/checksum.hpp"
+#include <cstring>          
 #include <iostream>
 
 // Константы для сырого пакета
@@ -12,29 +12,29 @@ const int TOTAL_PACKET_LEN = IP_HEADER_LEN + TCP_HEADER_LEN;
 PacketGenerator::PacketGenerator(const TargetInfo& target)
     : target_(target), buffer_(TOTAL_PACKET_LEN) // Инициализируем буфер
 {
-    // Обязательный профессиональный шаг: обнуляем буфер перед заполнением
+    //обнуляем буфер перед заполнением
     std::memset(buffer_.data(), 0, TOTAL_PACKET_LEN);
 }
 
 // Главный метод сборки
 std::vector<char> PacketGenerator::get_raw_packet() const {
-    // 1. Указатели на начало IP и TCP заголовков
+    // Указатели на начало IP и TCP заголовков
     struct iphdr* ip_h = (struct iphdr*)buffer_.data();
     struct tcphdr* tcp_h = (struct tcphdr*)(buffer_.data() + IP_HEADER_LEN);
 
-    // 2. Заполнение заголовков
+    // Заполнение заголовков
     fill_ip_header(ip_h);
     fill_tcp_header(tcp_h);
     
-    // 3. Расчет контрольных сумм (должен быть последним!)
+    // Расчет контрольных сумм (должен быть последним!)
     // Так как метод const, мы не можем вызвать calculate_checksums
     // Поэтому логика расчета в этом случае должна быть тут (или метод не должен быть const).
     
-    // 3.1 IP Checksum
+    // IP Checksum
     ip_h->check = 0; // Обнуляем поле перед расчетом
     ip_h->check = checksum((uint16_t*)ip_h, IP_HEADER_LEN);
 
-    // 3.2 TCP Checksum (Самая сложная часть: требует PseudoHeader)
+    // TCP Checksum
     struct PseudoHeader psh;
     psh.source_ip = ip_h->saddr;
     psh.dest_ip = ip_h->daddr;
@@ -53,7 +53,7 @@ std::vector<char> PacketGenerator::get_raw_packet() const {
     return buffer_;
 }
 
-// Вспомогательная функция: Заполнение IP-заголовка
+// Заполнение IP-заголовка
 void PacketGenerator::fill_ip_header(struct iphdr* ip_h) const {
     // 4 бита версия (IPv4) и 4 бита длина заголовка (в 32-битных словах, 20 байт = 5 слов)
     ip_h->version = 4;
