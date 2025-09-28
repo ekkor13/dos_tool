@@ -24,6 +24,6 @@ cd dos_tool
 make
 make install
 
-###Launch
 
+***Launch***
 dos_tool --help
