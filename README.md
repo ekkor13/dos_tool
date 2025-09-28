@@ -25,5 +25,5 @@ make
 make install
 
 ###Launch
-```bash
+
 dos_tool --help
