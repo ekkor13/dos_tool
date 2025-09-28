@@ -12,23 +12,17 @@ const int TOTAL_PACKET_LEN = IP_HEADER_LEN + TCP_HEADER_LEN;
 PacketGenerator::PacketGenerator(const TargetInfo& target)
     : target_(target), buffer_(TOTAL_PACKET_LEN) // Инициализируем буфер
 {
-    //обнуляем буфер перед заполнением
     std::memset(buffer_.data(), 0, TOTAL_PACKET_LEN);
 }
 
 // Главный метод сборки
 std::vector<char> PacketGenerator::get_raw_packet() const {
-    // Указатели на начало IP и TCP заголовков
     struct iphdr* ip_h = (struct iphdr*)buffer_.data();
     struct tcphdr* tcp_h = (struct tcphdr*)(buffer_.data() + IP_HEADER_LEN);
 
     // Заполнение заголовков
     fill_ip_header(ip_h);
     fill_tcp_header(tcp_h);
-    
-    // Расчет контрольных сумм (должен быть последним!)
-    // Так как метод const, мы не можем вызвать calculate_checksums
-    // Поэтому логика расчета в этом случае должна быть тут (или метод не должен быть const).
     
     // IP Checksum
     ip_h->check = 0; // Обнуляем поле перед расчетом
@@ -55,7 +49,6 @@ std::vector<char> PacketGenerator::get_raw_packet() const {
 
 // Заполнение IP-заголовка
 void PacketGenerator::fill_ip_header(struct iphdr* ip_h) const {
-    // 4 бита версия (IPv4) и 4 бита длина заголовка (в 32-битных словах, 20 байт = 5 слов)
     ip_h->version = 4;
     ip_h->ihl = 5;
     ip_h->tos = 0; // Тип сервиса
@@ -66,10 +59,7 @@ void PacketGenerator::fill_ip_header(struct iphdr* ip_h) const {
     ip_h->protocol = IPPROTO_TCP; // TCP = 6
     ip_h->check = 0; // Будет рассчитана позже
     
-    // Исходный IP: Случайный или IP машины (для SYN Flood лучше рандомизировать)
-    // Сейчас используем IP машины (localhost), для простоты:
     ip_h->saddr = inet_addr("127.0.0.1"); 
-    // Целевой IP: конвертируем строку IP в сетевой формат
     ip_h->daddr = inet_addr(target_.ip.c_str()); 
 }
 

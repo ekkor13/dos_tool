@@ -4,8 +4,6 @@
 #include "../cli/cli.hpp" // Для TargetInfo
 #include <string>
 
-// Мы будем использовать константы из системных заголовков,
-// поэтому нам нужен специальный класс для инкапсуляции.
 
 class CoreAttacker {
 public:
@@ -27,4 +25,4 @@ private:
     void send_packet();
 };
 
-#endif // CORE_ATTACKER_HPP
+#endif 
