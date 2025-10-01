@@ -123,7 +123,7 @@ TargetInfo ArgumentsProcessor::interactive_mode() const {
     std::cout << "--------------------------------------------------------\n";
     std::cout << "\033[0m\n\n";
     do {
-        std::cout << "Enter target IP or Hostname (e.g., example.com): ";
+        std::cout << "Enter target IP or Hostname (127.0.0.1 , example.com): ";
         std::getline(std::cin, ip_or_host);
 
         if (ip_or_host.empty()) {
@@ -145,7 +145,7 @@ TargetInfo ArgumentsProcessor::interactive_mode() const {
     } while (info.ip.empty());
 
     do {
-        std::cout << "Enter target port (e.g., 80, 443): ";
+        std::cout << "Enter target port (80, 443 ...): ";
         if (!(std::cin >> info.port) || info.port <= 0 || info.port > 65535) {
             std::cerr << "Invalid port number. Try again.\n";
             std::cin.clear(); 
