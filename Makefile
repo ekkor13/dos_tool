@@ -1,106 +1,56 @@
-# ==================================
-# НАСТРОЙКИ
-# ==================================
-CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17 -pedantic
-CXXFLAGS += -I.
+CC = g++
+CFLAGS = -Wall -std=c++17 -O2 -I./cli -I./core -I./utils
+LDFLAGS = -lpthread
+TARGET = dos_tool
 
-# Папка для всех сгенерированных файлов
-BUILD_DIR = build
-
-# Имя исполняемого файла
-TARGET = $(BUILD_DIR)/dos_tool
-
-# Список исходных файлов (.cpp) с полными путями
-SOURCES = \
-	main.cpp \
+SRC_FILES = main.cpp \
 	cli/cli.cpp \
 	core/attacker.cpp \
 	core/packet.cpp \
 	utils/checksum.cpp
 
-# Список чистых имен файлов (main.cpp, cli.cpp, ...)
-SOURCE_NAMES = $(notdir $(SOURCES))
+OBJ_FILES = main.o \
+	cli/cli.o \
+	core/attacker.o \
+	core/packet.o \
+	utils/checksum.o
 
-# Список объектных файлов, которые будут в папке build/
-OBJS = $(addprefix $(BUILD_DIR)/, $(SOURCE_NAMES:.cpp=.o))
+all: $(TARGET)
 
-# Указываем Make, где искать исходные файлы (.cpp), которые указаны в OBJS
-# В данном случае, это корневая папка, cli/, core/, utils/
-VPATH = $(shell find . -type d)
+$(TARGET): $(OBJ_FILES)
+	@echo "Linking executable..."
+	$(CC) $(OBJ_FILES) -o $(TARGET) $(LDFLAGS)
+	@echo "Build complete. File: $(TARGET)"
 
+cli/%.o: cli/%.cpp
+	@echo "Compiling $<"
+	$(CC) $(CFLAGS) -c $< -o $@
 
-# ==================================
-# ОСНОВНЫЕ ПРАВИЛА
-# ==================================
+core/%.o: core/%.cpp
+	@echo "Compiling $<"
+	$(CC) $(CFLAGS) -c $< -o $@
 
-# Цель 'all' (по умолчанию): собирает TARGET
-.PHONY: all
-all: $(BUILD_DIR) $(TARGET)
+utils/%.o: utils/%.cpp
+	@echo "Compiling $<"
+	$(CC) $(CFLAGS) -c $< -o $@
 
-# Цель: Создать основную папку сборки
-$(BUILD_DIR):
-	@mkdir -p $(BUILD_DIR)
+main.o: main.cpp
+	@echo "Compiling $<"
+	$(CC) $(CFLAGS) -c $< -o $@
 
-# 1. Основная цель: компоновка исполняемого файла
-$(TARGET): $(OBJS)
-	@echo "Linking $(TARGET)..."
-	@$(CXX) $(OBJS) -o $(TARGET) $(LDFLAGS)
-
-# 2. Общее правило для компиляции:
-# Использует VPATH для поиска исходных файлов в разных папках.
-$(BUILD_DIR)/%.o: %.cpp
-	@echo "Compiling $< to $@"
-	@$(CXX) $(CXXFLAGS) -c $< -o $@
-
-
-# ==================================
-# ВСПОМОГАТЕЛЬНЫЕ ЦЕЛИ
-# ==================================
-
-# Цель 'clean': удаляет скомпилированные файлы и папку build
-.PHONY: clean
 clean:
-	@echo "Cleaning build directory..."
-	@rm -rf $(BUILD_DIR)
+	@echo "Removing object files and executable..."
+	rm -f $(TARGET) $(OBJ_FILES) cli/*.o core/*.o utils/*.o
+	@echo "Cleanup complete."
 
-# Цель для перекомпиляции всего
-.PHONY: rebuild
-rebuild: clean all
+install: $(TARGET)
+	@echo "Installing $(TARGET) to /usr/local/bin/..."
+	@sudo cp $(TARGET) /usr/local/bin/
+	@echo "Installation complete. Run with 'sudo $(TARGET)'"
 
-
-# ... (Предыдущие секции)
-
-# ==================================
-# УСТАНОВКА И УДАЛЕНИЕ
-# ==================================
-
-# Папка для установки исполняемого файла
-INSTALL_DIR = /usr/local/bin
-
-# Цель 'install': копирует исполняемый файл и удаляет лишний шаг создания ссылки
-.PHONY: install
-install: all
-	@echo "Installing $(notdir $(TARGET))..."
-	# 1. Сначала убедимся, что папка установки существует
-	@sudo mkdir -p $(INSTALL_DIR)
-	
-	# 2. Удаляем старую символическую ссылку или файл, если он существует
-	@echo "Removing old installation (if any)..."
-	@sudo rm -f $(INSTALL_DIR)/dos_tool
-	
-	# 3. Копируем исполняемый файл из папки сборки
-	@echo "Copying executable to $(INSTALL_DIR)..."
-	@sudo cp $(TARGET) $(INSTALL_DIR)
-	
-	# ШАГ 4 (СОЗДАНИЕ ССЫЛКИ) БОЛЬШЕ НЕ НУЖЕН
-	
-	@echo "Installation complete. You can now run 'dos_tool' from anywhere."
-
-# Цель 'uninstall': удаляет исполняемый файл
-.PHONY: uninstall
 uninstall:
-	@echo "Uninstalling $(notdir $(TARGET)) from $(INSTALL_DIR)..."
-	# Удаляем сам исполняемый файл
-	@sudo rm -f $(INSTALL_DIR)/dos_tool
+	@echo "Removing $(TARGET) from /usr/local/bin/..."
+	@sudo rm -f /usr/local/bin/$(TARGET)
 	@echo "Uninstallation complete."
+
+.PHONY: all clean install uninstall
