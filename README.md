@@ -25,12 +25,12 @@ To successfully build this project on your system, you'll need:
 ### Clone the Repository and Install
 
 ```bash
-git clone https://github.com/ekkor13/dos_tool/
-cd dos_tool
-```bash
-make
-make install
+git clone https://github.com/ekkor13/dos_tool && \
+cd dos_tool && \
+make && \
+sudo make install
 
-
+```
 ***Launch***
+sudo dos_tool
 dos_tool --help
