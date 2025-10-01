@@ -31,6 +31,6 @@ make && \
 sudo make install
 
 ```
-***Launch***
+## Launch
 sudo dos_tool
 dos_tool --help
