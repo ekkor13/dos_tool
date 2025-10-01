@@ -115,12 +115,13 @@ TargetInfo ArgumentsProcessor::interactive_mode() const {
     std::string ip_or_host;
     info.threads_count = 100;
 
+    std::cout << "\n\n\033[31m";
     std::cout << "--------------------------------------------------------\n";
     std::cout << "This tool is for educational purposes only.\n";
     std::cout << "It demonstrates the construction and sending of raw TCP SYN packets.\n";
     std::cout << "Use responsibly and only on networks or hosts where you have explicit permission.\n";
     std::cout << "--------------------------------------------------------\n";
-
+    std::cout << "\033[0m\n\n";
     do {
         std::cout << "Enter target IP or Hostname (e.g., example.com): ";
         std::getline(std::cin, ip_or_host);
