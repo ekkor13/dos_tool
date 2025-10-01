@@ -32,5 +32,5 @@ sudo make install
 
 ```
 ## Launch
-sudo dos_tool
+```bash
 dos_tool --help
