@@ -1,9 +1,14 @@
 # dos_tool 
 
-console-based utility to test DoS attacks by generating controlled traffic.
-
+Multi-threaded SYN Flood Attacker
+The tool performs a SYN Flood attack by manually constructing raw TCP packets with the SYN flag set.
 ---
+* **Source IP and Port Spoofing:** The sender's IP and port are randomized for every packet to enhance anonymity and bypass simple filtering.
+* **Raw Socket Access:** The application directly manipulates network packets at the IP layer.
+* **Multi-threaded Operation:** Uses multiple threads to achieve a very high packet rate (packets per second).
 
+**Disclaimer:** This tool is for educational purposes only. Use it responsibly and exclusively on networks or systems where you have explicit permission. Requires SUDO privileges to open raw sockets.
+  
 ## Installation
 
 This project uses the standard C++ compiler (`g++`) and the **GNU Make** build system.
