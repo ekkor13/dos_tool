@@ -1,7 +1,7 @@
 # dos_tool 
 
 Multi-threaded SYN Flood Attacker
-The tool performs a SYN Flood attack by manually constructing raw TCP packets with the SYN flag set.
+### The tool performs a SYN Flood attack by manually constructing raw TCP packets with the SYN flag set.
 ---
 * **Source IP and Port Spoofing:** The sender's IP and port are randomized for every packet to enhance anonymity and bypass simple filtering.
 * **Raw Socket Access:** The application directly manipulates network packets at the IP layer.
