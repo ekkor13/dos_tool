@@ -21,6 +21,4 @@ uint16_t checksum(const uint16_t *addr, int len)
   sum += (sum >> 16);
 
   return (uint16_t)~sum;
-
-
 }

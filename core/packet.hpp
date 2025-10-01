@@ -34,7 +34,6 @@ class PacketGenerator{
 
     void fill_ip_header(struct iphdr* ip_h) const;
     void fill_tcp_header(struct tcphdr* tcp_h) const;
-    void calculate_checksums();
 
     uint32_t get_random_ip() const;
     uint16_t get_random_port() const;
