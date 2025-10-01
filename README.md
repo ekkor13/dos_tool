@@ -27,6 +27,7 @@ To successfully build this project on your system, you'll need:
 ```bash
 git clone https://github.com/ekkor13/dos_tool/
 cd dos_tool
+```bash
 make
 make install
 
