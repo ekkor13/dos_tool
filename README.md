@@ -1,4 +1,3 @@
-# dos_tool 
 Multi-threaded SYN Flood Attacker
 ---
 ### The tool performs a SYN Flood attack by manually constructing raw TCP packets with the SYN flag set.
