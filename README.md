@@ -8,7 +8,7 @@ Multi-threaded SYN Flood Attacker (dos_tool)
 **Disclaimer:** This tool is for educational purposes only. Use it responsibly and exclusively on networks or systems where you have explicit permission. Requires SUDO privileges to open raw sockets.
   
   ## Demo
-<video src="assets/dos_demo.mp4" controls width="700" muted autoplay loop playsinline>
+<video src="assets/dos_demo.gif" controls width="700" muted autoplay loop playsinline>
     Sorry, your browser does not support embedded videos.
 </video>
 
